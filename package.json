@@ -1,0 +1,28 @@
+{
+  "name": "multi-vesting-contract",
+  "version": "1.0.0",
+  "description": "Smart contract which allows for vesting funds for multiple addresses",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^2.5.0"
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "solc": "^0.5.17",
+    "solidity-coverage": "^0.7.5",
+    "truffle-flattener": "^1.4.4",
+    "web3": "^1.2.8"
+  },
+  "scripts": {
+    "dist": "truffle-flattener ./contracts/EarlyAdopterVesting.sol > EarlyAdopterVesting.full.sol && solcjs --bin --abi --optimize EarlyAdopterVesting.full.sol && mv EarlyAdopterVesting_full_sol_EarlyAdopterVesting.bin EarlyAdopterVesting.full.bin && mv EarlyAdopterVesting_full_sol_EarlyAdopterVesting.abi EarlyAdopterVesting.full.abi && rm *_sol_*",
+    "test": "./scripts/test.sh",
+    "coverage": "truffle run coverage",
+    "start-remix": "remixd -s . --remix-ide \"https://remix.ethereum.org\"",
+    "start-ganache-cli-as-fork": "ganache-cli --fork http://34.70.221.143:8545 -p 9545 --gasLimit 0xfffffffffff"
+  },
+  "author": "PumaPay Smart Contract Dev Team",
+  "license": "ISC"
+}
