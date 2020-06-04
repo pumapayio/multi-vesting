@@ -17,7 +17,7 @@
     "web3": "^1.2.8"
   },
   "scripts": {
-    "dist": "truffle-flattener ./contracts/EarlyAdopterVesting.sol > EarlyAdopterVesting.full.sol && solcjs --bin --abi --optimize EarlyAdopterVesting.full.sol && mv EarlyAdopterVesting_full_sol_EarlyAdopterVesting.bin EarlyAdopterVesting.full.bin && mv EarlyAdopterVesting_full_sol_EarlyAdopterVesting.abi EarlyAdopterVesting.full.abi && rm *_sol_*",
+    "flatten": "truffle-flattener ./contracts/MultiVesting.sol > ./dist/MultiVesting.full.sol && solcjs --bin --abi --optimize ./dist/MultiVesting.full.sol && mv __dist_MultiVesting_full_sol_MultiVesting.bin ./dist/MultiVesting.full.bin && mv __dist_MultiVesting_full_sol_MultiVesting.abi ./dist/MultiVesting.full.abi && rm ./*_sol_*",
     "test": "./scripts/test.sh",
     "coverage": "truffle run coverage",
     "start-remix": "remixd -s . --remix-ide \"https://remix.ethereum.org\"",
