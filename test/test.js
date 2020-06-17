@@ -36,6 +36,16 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
             assert(x.toNumber() === 1)
         })
 
+        it('Doesn\'t allow add westing to owner with a past timestamp', async function () {
+            const timestampInThePast = Math.floor(Date.now() / 1000) - 20000
+            const args = [user1, toWei('1', 'ether'), timestampInThePast]
+            await assert.rejects(() => {
+                    return this.multiVesting.addVesting(...args, {from: owner})
+                },
+                {reason: 'TIMESTAMP_CANNOT_BE_IN_THE_PAST'}
+            )
+        })
+
         it('Doesn\'t allow to other add vesting', async function () {
             await assert.rejects(() => {
                 const args = [user1, toWei('1', 'ether')]
@@ -191,13 +201,13 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
 
         it('Returns 0 for allocation available for the beneficiaries who doesn\'t have vesting', async function () {
             const balanceBn = await this.multiVesting.getAvailableAmountAggregated(user4, {from: user4})
-            const balanceInEther = fromWei(balanceBn, 'milli') / 1000;
+            const balanceInEther = fromWei(balanceBn, 'milli') / 1000
             assert.strictEqual(balanceInEther, 0) // 100% and no more
         })
 
         it('Returns 0 for allocation available for the beneficiaries who doesn\'t have vesting, when vesingId is specified explicitly', async function () {
             const balanceBn = await this.multiVesting.getAvailableAmount(user4, '0', {from: user4})
-            const balanceInEther = fromWei(balanceBn, 'milli') / 1000;
+            const balanceInEther = fromWei(balanceBn, 'milli') / 1000
             assert.strictEqual(balanceInEther, 0) // 100% and no more
         })
 
@@ -297,10 +307,10 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
 
         it('Returns correct aggregated available amount for beneficiary with several allocations', async function () {
 
-            await timeTravel(secondsIn30Days * 25);
+            await timeTravel(secondsIn30Days * 25)
             //
             const total = await this.multiVesting.getAvailableAmountAggregated(user1, {from: user1})
-            const balanceInEther = fromWei(total, 'milli') / 1000;
+            const balanceInEther = fromWei(total, 'milli') / 1000
 
             assert.strictEqual(balanceInEther, 0.9)
         })
@@ -308,10 +318,10 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
         // Test were add to have full coverage
         it('Returns correct aggregated available amount for beneficiary with several allocations.\nAnd one of allocations was withdraw fully before the last completed', async function () {
 
-            await timeTravel(secondsIn30Days * 25);
+            await timeTravel(secondsIn30Days * 25)
             {
                 const total = await this.multiVesting.getAvailableAmountAggregated(user1, {from: user1})
-                const balanceInEther = fromWei(total, 'milli') / 1000;
+                const balanceInEther = fromWei(total, 'milli') / 1000
                 assert.strictEqual(balanceInEther, 0.9)
             }
 
@@ -321,23 +331,23 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
                 const vestingArgs = [user1, toWei('0.1', 'ether')]
                 await this.multiVesting.addVestingFromNow(...vestingArgs, {from: owner})
 
-                await timeTravel(secondsIn30Days * 25);
+                await timeTravel(secondsIn30Days * 25)
 
                 const total = await this.multiVesting.getAvailableAmountAggregated(user1, {from: user1})
-                const balanceInEther = fromWei(total, 'milli') / 1000;
+                const balanceInEther = fromWei(total, 'milli') / 1000
                 assert.strictEqual(balanceInEther, 0.1)
             }
         })
 
         it('Returns 0 for beneficiary that doesn\'t have allocations', async function () {
-            await timeTravel(secondsIn30Days * 25);
+            await timeTravel(secondsIn30Days * 25)
             const total = await this.multiVesting.getAvailableAmountAggregated(user2, {from: user2})
             assert.strictEqual(total.toNumber(), 0)
         })
 
         it('Allows to withdraw part of the funds from several vesting at one call', async function () {
 
-            await timeTravel(secondsIn30Days * 10);
+            await timeTravel(secondsIn30Days * 10)
             {
                 await this.multiVesting.withdrawAllAvailable({from: user1})
                 const balanceBn = await this.erc20Token.balanceOf(user1)
@@ -346,7 +356,7 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
                 assert.strictEqual(balanceInEther, 0.36)
             }
 
-            await timeTravel(secondsIn30Days * 15);
+            await timeTravel(secondsIn30Days * 15)
             {
                 await this.multiVesting.withdrawAllAvailable({from: user1})
                 const balanceBn = await this.erc20Token.balanceOf(user1)
@@ -357,7 +367,7 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
         })
 
         it('Allows to withdraw all funds from several when vesting time is expired', async function () {
-            await timeTravel(secondsIn30Days * 25);
+            await timeTravel(secondsIn30Days * 25)
 
             await this.multiVesting.withdrawAllAvailable({from: user1})
             const balanceBn = await this.erc20Token.balanceOf(user1)

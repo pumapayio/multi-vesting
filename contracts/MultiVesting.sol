@@ -18,7 +18,7 @@ contract MultiVesting is Ownable
     // ===============================================================================================================
     // Constants
     // ===============================================================================================================
-    uint256 constant SECONDS_IN_30_DAYS = 2592000; // 30 days
+    uint256 constant _30_DAYS = 2592000; // amount of seconds in 30 days
     uint256 public constant STEPS_AMOUNT = 25; // 25 steps, each step unlock 4% of funds after 30 days
 
     // ===============================================================================================================
@@ -49,11 +49,12 @@ contract MultiVesting is Ownable
     }
 
     /// @notice Creates vesting for beneficiary, with a given amount of funds to allocate,
-    /// and timestamp of the allocation. 
+    /// and timestamp of the allocation.
     /// @param _beneficiary - address of beneficiary.
     /// @param _amount - amount of tokens to allocate
     /// @param _startedAt - timestamp (in seconds) when the allocation should start
     function addVesting(address _beneficiary, uint256 _amount, uint256 _startedAt) public onlyOwner {
+        require(_startedAt >= now, "TIMESTAMP_CANNOT_BE_IN_THE_PAST");
         require(_amount >= STEPS_AMOUNT, "VESTING_AMOUNT_TO_LOW");
         uint256 debt = totalVestedAmount.sub(totalReleasedAmount);
         uint256 available = token.balanceOf(address(this)).sub(debt);
@@ -92,7 +93,7 @@ contract MultiVesting is Ownable
         uint256 maxId = vestingMap[msg.sender].length;
         for (uint vestingId = 0; vestingId < maxId; vestingId++) {
 
-            uint256 availableInSingleVesting = getAvailableAmountAtTimestamp(msg.sender, vestingId, now);
+            uint256 availableInSingleVesting = getAvailableAmount(msg.sender, vestingId);
             aggregatedAmount = aggregatedAmount.add(availableInSingleVesting);
 
             // Update released amount in specific vesting
@@ -140,7 +141,7 @@ contract MultiVesting is Ownable
             }
 
             available = available.add(
-                getAvailableAmountAtTimestamp(_beneficiary, vestingId, now)
+                getAvailableAmount(_beneficiary, vestingId)
             );
         }
         return available;
@@ -162,17 +163,17 @@ contract MultiVesting is Ownable
             return 0;
         }
 
-        uint256 secondsInMonth = SECONDS_IN_30_DAYS;
-        uint256 rewardPerMonth = vestingMap[_beneficiary][_vestingId].totalAmount.div(STEPS_AMOUNT);
+        Vesting memory vesting = vestingMap[_beneficiary][_vestingId];
+
+        uint256 secondsInMonth = _30_DAYS;
+        uint256 rewardPerMonth = vesting.totalAmount.div(STEPS_AMOUNT);
 
         // 25 Month (%4 per month)
-        uint256 monthPassed = (
-        _timestamp.sub(
-            vestingMap[_beneficiary][_vestingId].startedAt
-        )
-        ).div(secondsInMonth);
+        uint256 monthPassed = _timestamp
+            .sub(vesting.startedAt)
+            .div(secondsInMonth);
 
-        uint256 alreadyReleased = vestingMap[_beneficiary][_vestingId].releasedAmount;
+        uint256 alreadyReleased = vesting.releasedAmount;
 
         // In 25 month 100% of tokens is already released:
         if (monthPassed >= STEPS_AMOUNT) {

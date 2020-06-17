@@ -18,7 +18,7 @@
   },
   "scripts": {
     "flatten": "truffle-flattener ./contracts/MultiVesting.sol > ./dist/MultiVesting.full.sol && solcjs --bin --abi --optimize ./dist/MultiVesting.full.sol && mv __dist_MultiVesting_full_sol_MultiVesting.bin ./dist/MultiVesting.full.bin && mv __dist_MultiVesting_full_sol_MultiVesting.abi ./dist/MultiVesting.full.abi && rm ./*_sol_*",
-    "test": "./scripts/test.sh",
+    "test": "npm run flatten && ./scripts/test.sh",
     "coverage": "truffle run coverage",
     "start-remix": "remixd -s . --remix-ide \"https://remix.ethereum.org\"",
     "start-ganache-cli-as-fork": "ganache-cli --fork http://34.70.221.143:8545 -p 9545 --gasLimit 0xfffffffffff"
