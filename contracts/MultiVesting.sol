@@ -18,7 +18,6 @@ contract MultiVesting is Ownable
     // ===============================================================================================================
     // Constants
     // ===============================================================================================================
-    uint256 constant _30_DAYS = 2592000; // amount of seconds in 30 days
     uint256 public constant STEPS_AMOUNT = 25; // 25 steps, each step unlock 4% of funds after 30 days
 
     // ===============================================================================================================
@@ -165,13 +164,12 @@ contract MultiVesting is Ownable
 
         Vesting memory vesting = vestingMap[_beneficiary][_vestingId];
 
-        uint256 secondsInMonth = _30_DAYS;
         uint256 rewardPerMonth = vesting.totalAmount.div(STEPS_AMOUNT);
 
         // 25 Month (%4 per month)
         uint256 monthPassed = _timestamp
             .sub(vesting.startedAt)
-            .div(secondsInMonth);
+            .div(30 days); // We say that 1 month is always 30 days
 
         uint256 alreadyReleased = vesting.releasedAmount;
 
