@@ -175,7 +175,6 @@ contract MultiVesting is Ownable
 
         // In 25 month 100% of tokens is already released:
         if (monthPassed >= STEPS_AMOUNT) {
-            monthPassed = STEPS_AMOUNT;
             return vestingMap[_beneficiary][_vestingId].totalAmount.sub(alreadyReleased);
         }
 
