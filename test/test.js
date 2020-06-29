@@ -47,7 +47,7 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
         })
 
         it('Doesn\'t allow add westing to owner that is to far from current date', async function () {
-            const thirtyDays = 60 * 60 * 24 * 30;
+            const thirtyDays = 60 * 60 * 24 * 180;
             const timestampInThePast = Math.floor(Date.now() / 1000) + (thirtyDays + 1)
             const args = [user1, toWei('1', 'ether'), timestampInThePast]
             await assert.rejects(() => {
