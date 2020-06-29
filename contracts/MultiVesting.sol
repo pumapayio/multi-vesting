@@ -54,6 +54,7 @@ contract MultiVesting is Ownable
     /// @param _startedAt - timestamp (in seconds) when the allocation should start
     function addVesting(address _beneficiary, uint256 _amount, uint256 _startedAt) public onlyOwner {
         require(_startedAt >= now, "TIMESTAMP_CANNOT_BE_IN_THE_PAST");
+        require(_startedAt <= (now + 180 days), "TIMESTAMP_CANNOT_BE_MORE_THAN_A_180_DAYS_IN_FUTURE");
         require(_amount >= STEPS_AMOUNT, "VESTING_AMOUNT_TO_LOW");
         uint256 debt = totalVestedAmount.sub(totalReleasedAmount);
         uint256 available = token.balanceOf(address(this)).sub(debt);

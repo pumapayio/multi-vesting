@@ -46,6 +46,17 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
             )
         })
 
+        it('Doesn\'t allow add westing to owner that is to far from current date', async function () {
+            const thirtyDays = 60 * 60 * 24 * 180;
+            const timestampInThePast = Math.floor(Date.now() / 1000) + (thirtyDays + 1)
+            const args = [user1, toWei('1', 'ether'), timestampInThePast]
+            await assert.rejects(() => {
+                    return this.multiVesting.addVesting(...args, {from: owner})
+                },
+                {reason: 'TIMESTAMP_CANNOT_BE_MORE_THAN_A_180_DAYS_IN_FUTURE'}
+            )
+        })
+
         it('Doesn\'t allow to other add vesting', async function () {
             await assert.rejects(() => {
                 const args = [user1, toWei('1', 'ether')]
