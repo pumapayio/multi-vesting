@@ -53,7 +53,7 @@ contract('MultiVesting', function ([owner, user1, user2, user3, user4]) {
             await assert.rejects(() => {
                     return this.multiVesting.addVesting(...args, {from: owner})
                 },
-                {reason: 'TIMESTAMP_CANNOT_BE_MORE_THAN_A_30_DAYS_IN_FUTURE'}
+                {reason: 'TIMESTAMP_CANNOT_BE_MORE_THAN_A_180_DAYS_IN_FUTURE'}
             )
         })
 
